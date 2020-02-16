@@ -1,6 +1,4 @@
-package com.lianjia.sh.salary.taxfriend.test;
-
-import lombok.SneakyThrows;
+package CompletableFuture;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -10,38 +8,44 @@ import java.util.concurrent.ExecutionException;
  *
  * @author PeterChen
  * @summary TestMain
- * @Copyright (c) 2020, Lianjia Group All Rights Reserved.
  * @Description TestMain
  * @since 2020-02-15 19:14
  */
-public class TestMain {
-    @SneakyThrows
-    public static void main(String[] args) {
+public class SimpleTest {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
 
-        TestMain testMain = new TestMain();
+        SimpleTest simpleTest = new SimpleTest();
 
         System.out.println("===main start====");
 
-        System.out.println(testMain.dosth(5, testMain));
+        System.out.println(simpleTest.dosth(5, simpleTest));
 
-        testMain.sleep(10);
+        simpleTest.sleep(10);
         System.out.println("====main end====");
     }
 
-    private Integer dosth(int i, TestMain testMain) throws ExecutionException, InterruptedException {
-        return CompletableFuture.supplyAsync(() -> testMain.sleep(5))
+    private Integer dosth(int i, SimpleTest simpleTest) throws ExecutionException, InterruptedException {
+        return CompletableFuture.supplyAsync(() -> simpleTest.sleep(5))
+                //执行完成
                 .whenComplete((v, e) -> System.out.println(v + "---" + e))
+                //补获异常
                 .exceptionally((ex) -> {
                     System.out.println( ex.getMessage());
                     return 111;
+                }).thenApply((v)->{
+                    System.out.println(v);
+                    return v ;
                 }).get();
     }
 
-    @SneakyThrows
     private Integer sleep(int i) {
         String threadName = Thread.currentThread().getName();
         System.out.println(threadName + " sleep start " + i);
-        Thread.sleep(i * 1000L);
+        try {
+            Thread.sleep(i * 1000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println(threadName + " sleep end " + i);
         if (i == 5) {
             throw new RuntimeException(threadName + " my exception");
